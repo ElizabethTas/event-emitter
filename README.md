@@ -33,3 +33,10 @@ The specific problem: most projects either reach for Node's built-in `events` mo
 - **Listeners that modify the listener list during dispatch.** `emit` snapshots the listener array at the start of the call. A listener added mid-emit will not fire in the current emit; a listener removed mid-emit (even itself) will still fire in the current emit. This matches Node's `EventEmitter` and is the least surprising rule.
 - **`off(event, fn)` removes every occurrence of `fn`** if the same function was registered more than once.
 - **`off()` with no arguments clears everything.** `off(event)` clears one event. `off(event, fn)` removes one listener. All of these are silent no-ops if there is nothing to remove.
+
+## Design notes
+
+The window stores values eagerly rather than keeping running aggregates. Running
+sums drift with floating point over long streams, and recomputing from a small
+buffer is cheap enough that the drift is not worth the speed.
+
